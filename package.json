@@ -1,0 +1,30 @@
+{
+    "name": "pern-chat-app",
+    "version": "1.0.0",
+    "description": "",
+    "main": "index.js",
+    "scripts": {
+        "dev": "set NODE_OPTIONS=--loader ts-node/esm && nodemon --watch backend/src  --exec ts-node backend/src/index.ts"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "type": "module",
+    "devDependencies": {
+        "@types/cookie-parser": "^1.4.8",
+        "@types/express": "^5.0.1",
+        "@types/jsonwebtoken": "^9.0.9",
+        "nodemon": "^3.1.9",
+        "ts-node": "^10.9.2",
+        "typescript": "^5.8.2"
+    },
+    "dependencies": {
+        "@prisma/client": "^6.5.0",
+        "bcryptjs": "^3.0.2",
+        "cookie-parser": "^1.4.7",
+        "dotenv": "^16.4.7",
+        "express": "^5.1.0",
+        "jsonwebtoken": "^9.0.2",
+        "prisma": "^6.5.0"
+    }
+}
