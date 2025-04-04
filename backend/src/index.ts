@@ -19,4 +19,7 @@ app.listen(5000, () => {
     console.log("Server is running on port 5000");
 });
 
+//do later: add socket.io for real time messaging
+//configure this server for the deployment
+
 
