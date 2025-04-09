@@ -5,7 +5,7 @@ import GenderCheckbox from "../components/GenderCheckbox";
 const SignUp = () => {
 	return (
 		<div className='flex flex-col items-center justify-center min-w-96 mx-auto '>
-			<div className='w-full p-6 rounded-lg shadow-md bg-gray-400 bg-clip-padding backdrop-filter backdrop-blur-lg bg-opacity-0'>
+			<div className='w-full p-6 h-full  bg-white-00 rounded-md bg-clip-padding backdrop-filter backdrop-blur-2xl bg-opacity-20 border border-gray-300'>
 				<h1 className='text-3xl font-semibold text-center text-gray-500 tracking-wide'>
 					Sign Up <span className='text-cyan-400 font-bold'> ChatApp</span>
 				</h1>
