@@ -51,7 +51,7 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
 				const data = await res.json();
 
 				if (!res.ok) {
-					throw new Error(data.error || "Failed to fetch auth user");
+					throw new Error(data.error );
 				}
 
 				setAuthUser(data);
