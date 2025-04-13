@@ -12,6 +12,8 @@ type signupInputs = {
 };
 
 
+
+
 const useSignup = () => {
     const [loading, setLoading] = useState(false);
     const {setAuthUser} = useAuthContext();

@@ -3,9 +3,11 @@ import Home from './pages/Home';
 import Login from './pages/Login';
 import Signup from './pages/SignUp';
 import { useAuthContext } from './context/AuthContext';
+import { Toaster } from 'react-hot-toast';
 
 function App() {
   const { authUser, isLoading } = useAuthContext();  
+  console.log("authUser",authUser);
 
   if(isLoading)return null;
 
@@ -17,6 +19,7 @@ function App() {
         <Route path='/login' element={!authUser ? <Login/> : <Navigate to={"/"}/>} />
        
       </Routes>
+      <Toaster/>
       
 
     
