@@ -1,5 +1,6 @@
 import { Search } from "lucide-react";
 
+
 const SearchInput = () => {
 	return (
 		<form className='flex items-center gap-2 w-full  mx-auto '>

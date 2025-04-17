@@ -4,11 +4,12 @@ import { sendMessage,getMessages,getUserForSidebar } from '../controllers/messag
 
 const router = express.Router();
 
-router.get("/:conversations", protectRoute as RequestHandler, getUserForSidebar as RequestHandler);
+router.get("/conversations", protectRoute as RequestHandler, getUserForSidebar as RequestHandler);
 router.get("/:id", protectRoute as RequestHandler, getMessages as RequestHandler);
 
 router.post("/send/:id", protectRoute as RequestHandler, sendMessage);
 
-
-
 export default router;
+
+
+

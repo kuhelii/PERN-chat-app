@@ -10,11 +10,11 @@ import {create } from 'zustand';
 //     profilePic:string;
 // }
 
-type MessageType={
-    id:string;
-    body:string;
-    senderId:string;
-}
+// type MessageType={
+//     id:string;
+//     body:string;
+//     senderId:string;
+// }
 
 interface ConversationState {
     selectedConversation: ConversationType |null;

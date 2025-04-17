@@ -1,17 +1,24 @@
-const Message = ({ message }: { message?: any }) => {
-	const fromMe = message.fromMe;
+import { useAuthContext } from "../../context/AuthContext";
+import { extractTime } from "../../utils/extractTime";
+import useConversation from "../../zustand/useConversation";
+
+const Message = ({ message }: { message: MessageType }) => {
+	const {authUser} = useAuthContext();
+	const {selectedConversation}=useConversation();
+
+	const fromMe = message?.senderId===authUser?.id;
 	const chatClass = fromMe ? "chat-end" : "chat-start";
 
+	
 	const img = fromMe
-		? "https://avatar.iran.liara.run/public/boy?username=johndoe"
-		: "https://avatar.iran.liara.run/public/boy?username=janedoe";
+		? authUser?.profilePic 
+		: selectedConversation?.profilePic;
 
-	const isFromMe = message.fromMe;
 
 	const bubbleBase =
 		"text-white text-sm md:text-md px-4 py-2 rounded-2xl max-w-xs md:max-w-md relative";
 
-	const bubbleStyles = isFromMe
+	const bubbleStyles = fromMe
 		? "bg-gradient-to-br from-cyan-500 to-blue-600 before:bg-blue-600"
 		: "bg-[#1f2a32] border border-gray-600 before:bg-[#1f2a38]";
 
@@ -28,7 +35,7 @@ const Message = ({ message }: { message?: any }) => {
 			</div>
 
 			<span className='chat-footer opacity-50 text-[10px] md:text-xs flex gap-1 items-center text-white px-1'>
-				22:59
+				{extractTime(message.createAt)}
 			</span>
 		</div>
 	);
