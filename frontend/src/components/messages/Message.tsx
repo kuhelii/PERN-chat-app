@@ -37,7 +37,7 @@ const Message = ({ message }: { message: MessageType }) => {
 			</div>
 
 			<span className='chat-footer opacity-50 text-[10px] md:text-xs flex gap-1 items-center text-white px-1'>
-				{extractTime(message.createAt)}
+				{extractTime(message.createAt ?? '')}
 			</span>
 		</div>
 	);
