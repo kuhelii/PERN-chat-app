@@ -5,6 +5,7 @@ import {
   useContext,
   useEffect,
   useState,
+  useCallback,
 } from "react";
 
 import { useAuthContext } from "./AuthContext";
@@ -39,8 +40,8 @@ const SocketContextProvider = ({ children }: { children: ReactNode }) => {
   const [conversations, setConversations] = useState<ConversationType[]>([]);
   const { authUser, isLoading } = useAuthContext();
 
-  // Sort conversations by last message time
-  const sortConversations = (convs: ConversationType[]) => {
+  // Memoize the sort function to avoid unnecessary re-sorts
+  const sortConversations = useCallback((convs: ConversationType[]) => {
     return [...convs].sort((a, b) => {
       if (!a.lastMessageTime) return 1;
       if (!b.lastMessageTime) return -1;
@@ -49,10 +50,24 @@ const SocketContextProvider = ({ children }: { children: ReactNode }) => {
         new Date(a.lastMessageTime).getTime()
       );
     });
-  };
+  }, []);
+
+  // Memoize the setConversations handler to avoid unnecessary re-renders
+  const handleSetConversations = useCallback(
+    (convs: ConversationType[]) => {
+      setConversations(sortConversations(convs));
+    },
+    [sortConversations]
+  );
 
   useEffect(() => {
+    // Only connect socket if user is authenticated and not in loading state
     if (authUser && !isLoading) {
+      // Prevent multiple socket connections
+      if (socketRef.current) {
+        socketRef.current.close();
+      }
+
       const socket = io(socketURL, {
         query: {
           userId: authUser.id,
@@ -67,24 +82,24 @@ const SocketContextProvider = ({ children }: { children: ReactNode }) => {
       socket.on("newMessage", (newMessage) => {
         // Update the conversations when a new message is received
         setConversations((prevConversations) => {
+          const otherUserId =
+            newMessage.senderId === authUser.id
+              ? newMessage.receiverId
+              : newMessage.senderId;
+
           const conversationExists = prevConversations.find(
-            (conv) =>
-              conv.id === newMessage.senderId ||
-              conv.id === newMessage.receiverId
+            (conv) => conv.id === otherUserId
           );
 
           if (conversationExists) {
             // Update existing conversation
             const updatedConversations = prevConversations.map((conv) => {
-              if (
-                conv.id === newMessage.senderId ||
-                conv.id === newMessage.receiverId
-              ) {
+              if (conv.id === otherUserId) {
                 return {
                   ...conv,
                   lastMessage: newMessage.body,
                   lastMessageTime:
-                    newMessage.createAt || new Date().toISOString(),
+                    newMessage.createdAt || new Date().toISOString(),
                 };
               }
               return conv;
@@ -97,6 +112,8 @@ const SocketContextProvider = ({ children }: { children: ReactNode }) => {
       });
 
       return () => {
+        socket.off("newMessage");
+        socket.off("getOnlineUsers");
         socket.close();
         socketRef.current = null;
       };
@@ -106,7 +123,7 @@ const SocketContextProvider = ({ children }: { children: ReactNode }) => {
         socketRef.current = null;
       }
     }
-  }, [authUser, isLoading]);
+  }, [authUser, isLoading, sortConversations]);
 
   return (
     <SocketContext.Provider
@@ -114,7 +131,7 @@ const SocketContextProvider = ({ children }: { children: ReactNode }) => {
         socket: socketRef.current,
         onlineUsers,
         conversations,
-        setConversations: (convs) => setConversations(sortConversations(convs)),
+        setConversations: handleSetConversations,
       }}
     >
       {children}

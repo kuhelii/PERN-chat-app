@@ -8,28 +8,32 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '';
 const useGetConversations = () => {
   const [loading, setLoading] = useState(false);
   const { conversations, setConversations } = useSocketContext();
+  const [fetchedInitialData, setFetchedInitialData] = useState(false);
 
   useEffect(() => {
-    const getConversations = async () => {
-      setLoading(true);
-      try {
-        const res = await fetch(`${API_BASE_URL}/api/messages/conversations`, {
-          credentials: 'include',
-        });
-        const data = await res.json();
-        if (data.error) {
-          throw new Error(data.error);
+    // Only fetch conversations if we haven't done it already
+    if (!fetchedInitialData) {
+      const getConversations = async () => {
+        setLoading(true);
+        try {
+          const res = await fetch(`${API_BASE_URL}/api/messages/conversations`, {
+            credentials: 'include',
+          });
+          const data = await res.json();
+          if (data.error) {
+            throw new Error(data.error);
+          }
+          setConversations(data);
+          setFetchedInitialData(true);
+        } catch (error: any) {
+          toast.error(error.message);
+        } finally {
+          setLoading(false);
         }
-        setConversations(data);
-
-      } catch (error: any) {
-        toast.error(error.message);
-      } finally {
-        setLoading(false);
       }
+      getConversations();
     }
-    getConversations();
-  }, [setConversations])
+  }, [setConversations, fetchedInitialData]);
 
   return { loading, conversations };
 };

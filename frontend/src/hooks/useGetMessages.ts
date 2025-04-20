@@ -7,36 +7,43 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '';
 
 const useGetMessages = () => {
     const [loading, setLoading] = useState(false);
-    const { messages, setMessages, selectedConversation } = useConversation();
+    const { selectedConversation, messages, setMessages, lastMessagesFetched, setLastMessagesFetched } = useConversation();
 
     useEffect(() => {
-        const getMessages = async () => {
-
-            if (!selectedConversation) return;
-
-            setLoading(true);
+        // Reset the messages state and lastMessagesFetched flag when conversation changes
+        if (selectedConversation) {
             setMessages([]);
-            try {
-                const res = await fetch(`${API_BASE_URL}/api/messages/${selectedConversation.id}`, {
-                    credentials: 'include',
-                });
-                const data = await res.json();
-
-                if (!res.ok) {
-                    throw new Error(data.error);
-                }
-                setMessages(data);
-            } catch (error: any) {
-                toast.error(error.message);
-            } finally {
-                setLoading(false);
-            }
+            setLastMessagesFetched(false);
         }
-        getMessages();
-    }, [selectedConversation, setMessages])
+    }, [selectedConversation?.id, setMessages, setLastMessagesFetched]);
 
-    return { messages, loading };
+    useEffect(() => {
+        // Only fetch messages if we have a selected conversation and haven't fetched messages yet
+        if (selectedConversation && !lastMessagesFetched) {
+            const getMessages = async () => {
+                setLoading(true);
+                try {
+                    const res = await fetch(`${API_BASE_URL}/api/messages/${selectedConversation.id}`, {
+                        credentials: 'include',
+                    });
+                    const data = await res.json();
+                    if (data.error) {
+                        throw new Error(data.error);
+                    }
+                    setMessages(data);
+                    setLastMessagesFetched(true);
+                } catch (error: any) {
+                    toast.error(error.message);
+                } finally {
+                    setLoading(false);
+                }
+            };
 
-}
+            getMessages();
+        }
+    }, [selectedConversation, lastMessagesFetched, setMessages, setLastMessagesFetched]);
 
-export default useGetMessages
+    return { loading, messages };
+};
+
+export default useGetMessages;

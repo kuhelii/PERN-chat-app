@@ -1,6 +1,4 @@
-
-import {create } from 'zustand';
-
+import { create } from "zustand";
 
 //this all types are write in my types folder global.d.ts file:
 
@@ -17,17 +15,26 @@ import {create } from 'zustand';
 // }
 
 interface ConversationState {
-    selectedConversation: ConversationType |null;
+    selectedConversation: ConversationType | null;
+    setSelectedConversation: (conversation: ConversationType | null) => void;
     messages: MessageType[];
-    setSelectedConversation:(conversation:ConversationType|null)=> void ;
-    setMessages:(messages:MessageType[])=>void;
+    setMessages: (
+        messages: MessageType[] | ((prevMessages: MessageType[]) => MessageType[])
+    ) => void;
+    lastMessagesFetched: boolean;
+    setLastMessagesFetched: (status: boolean) => void;
 }
 
-const useConversation = create<ConversationState>((set) =>({
+const useConversation = create<ConversationState>((set) => ({
     selectedConversation: null,
     setSelectedConversation: (conversation) => set({ selectedConversation: conversation }),
-    messages:[],
-    setMessages:(messages) => set({messages:messages}),
-}))
+    messages: [],
+    setMessages: (messages) =>
+        set((state) => ({
+            messages: typeof messages === "function" ? messages(state.messages) : messages,
+        })),
+    lastMessagesFetched: false,
+    setLastMessagesFetched: (status) => set({ lastMessagesFetched: status }),
+}));
 
 export default useConversation;
