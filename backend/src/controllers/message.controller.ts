@@ -100,8 +100,8 @@ export const getMessages= async (req:Request,res:Response) => {
     }
 }
 
-export const getUserForSidebar= async (req:Request,res:Response) => {
-    try{
+export const getUserForSidebar = async (req: Request, res: Response) => {
+    try {
         const authUserId = req.user.id;
         
         const users = await prisma.user.findMany({
@@ -115,14 +115,44 @@ export const getUserForSidebar= async (req:Request,res:Response) => {
                 fullname: true,
                 profilePic: true,
             }
-        })
+        });
 
-        res.status(200).json(users);
+        // Get latest messages for each user
+        const usersWithMessages = await Promise.all(
+            users.map(async (user) => {
+                const conversation = await prisma.conversation.findFirst({
+                    where: {
+                        participantIds: {
+                            hasEvery: [authUserId, user.id],
+                        }
+                    },
+                    include: {
+                        messages: {
+                            orderBy: {
+                                createAt: "desc"
+                            },
+                            take: 1,
+                        }
+                    }
+                });
 
+                return {
+                    ...user,
+                    lastMessage: conversation?.messages[0]?.body || "",
+                    lastMessageTime: conversation?.messages[0]?.createAt || null
+                };
+            })
+        );
 
-    }catch(error:any){
-        console.error("Error in getMessages:",error.message);
-        res.status(500).json({error:"Internal server error"});
+        const sortedUsers = usersWithMessages.sort((a, b) => {
+            if (!a.lastMessageTime) return 1;
+            if (!b.lastMessageTime) return -1;
+            return new Date(b.lastMessageTime).getTime() - new Date(a.lastMessageTime).getTime();
+        });
+        res.status(200).json(sortedUsers);
 
+    } catch (error: any) {
+        console.error("Error in getMessages:", error.message);
+        res.status(500).json({ error: "Internal server error" });
     }
 }
