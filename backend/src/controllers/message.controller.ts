@@ -1,5 +1,6 @@
 import {Request,Response} from "express";
 import prisma from "../db/prisma.js";
+import { getReciverSocketId, io } from "../socket/socket.js";
 
 export const sendMessage= async (req:Request,res:Response) => {
     try{
@@ -47,6 +48,12 @@ export const sendMessage= async (req:Request,res:Response) => {
                     },
                 },
             });
+        }
+
+        //socket io will be used to send the message to the reciver...make all the message in realtime
+        const receiverSocketId = getReciverSocketId (receiverId);
+        if(receiverSocketId){
+            io.to(receiverSocketId).emit("newMessage", newMessage);
         }
 
         res.status(201).json(newMessage)

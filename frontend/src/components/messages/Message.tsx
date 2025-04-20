@@ -22,6 +22,8 @@ const Message = ({ message }: { message: MessageType }) => {
 		? "bg-gradient-to-br from-cyan-500 to-blue-600 before:bg-blue-600"
 		: "bg-[#1f2a32] border border-gray-600 before:bg-[#1f2a38]";
 
+		const shakeClass=message.shouldShake? "shake" : "";
+
 	return (
 		<div className={`chat ${chatClass}`}>
 			<div className='hidden md:block chat-image avatar'>
@@ -30,7 +32,7 @@ const Message = ({ message }: { message: MessageType }) => {
 				</div>
 			</div>
 
-			<div className={`chat-bubble ${bubbleBase} ${bubbleStyles}`}>
+			<div className={`chat-bubble ${bubbleBase} ${bubbleStyles} ${shakeClass}`}>
 				{message.body}
 			</div>
 

@@ -11,4 +11,5 @@ type MessageType={
     body:string;
     senderId:string;
     createAt:string;
+    shouldShake?:boolean;
 }
