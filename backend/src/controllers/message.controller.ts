@@ -50,10 +50,22 @@ export const sendMessage= async (req:Request,res:Response) => {
             });
         }
 
-        //socket io will be used to send the message to the reciver...make all the message in realtime
-        const receiverSocketId = getReciverSocketId (receiverId);
+        // Enhance the message with additional data for the frontend
+        const messageForClient = {
+            ...newMessage,
+            receiverId  // Add receiverId to help the frontend identify the conversation
+        };
+
+        // socket io will be used to send the message to the reciver...make all the message in realtime
+        const receiverSocketId = getReciverSocketId(receiverId);
         if(receiverSocketId){
-            io.to(receiverSocketId).emit("newMessage", newMessage);
+            io.to(receiverSocketId).emit("newMessage", messageForClient);
+        }
+
+        // Also send the message to the sender's socket for updating their conversation list
+        const senderSocketId = getReciverSocketId(senderId);
+        if(senderSocketId){
+            io.to(senderSocketId).emit("newMessage", messageForClient);
         }
 
         res.status(201).json(newMessage)

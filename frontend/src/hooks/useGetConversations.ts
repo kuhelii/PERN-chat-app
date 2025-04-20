@@ -1,12 +1,13 @@
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
+import { useSocketContext } from "../context/SocketContext";
 
 // API URL from environment variable
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '';
 
 const useGetConversations = () => {
   const [loading, setLoading] = useState(false);
-  const [conversations, setConversations] = useState<ConversationType[]>([]);
+  const { conversations, setConversations } = useSocketContext();
 
   useEffect(() => {
     const getConversations = async () => {
@@ -28,7 +29,8 @@ const useGetConversations = () => {
       }
     }
     getConversations();
-  }, [])
+  }, [setConversations])
+
   return { loading, conversations };
 };
 

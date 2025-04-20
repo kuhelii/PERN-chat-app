@@ -16,12 +16,12 @@ app.use(cookieparser());//for parsing cookies
 app.use(express.json());// for parsing application/json
 
 
-// app.use(cors({
-//     origin: 'http://localhost:5173',
-//     credentials: true, // This allows cookies to be sent with cross-origin requests
-//     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-//     allowedHeaders: ['Content-Type', 'Authorization']
-// }));
+app.use(cors({
+    origin: 'http://localhost:5173',
+    credentials: true, // This allows cookies to be sent with cross-origin requests
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization']
+}));
 
 
 app.use("/api/auth", authRoutes)
