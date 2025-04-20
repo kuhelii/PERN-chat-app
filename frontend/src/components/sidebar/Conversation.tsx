@@ -17,10 +17,15 @@ const Conversation = ({ conversation, emoji }: { conversation: ConversationType 
 				setSelectedConversation(conversation)
 			}
 			>
-				<div className={`avatar ${isOnline ? 'online':""}`}>
-					<div className='w-8 md:w-12 rounded-full'>
-						<img src={conversation.profilePic} alt='user avatar' />
+				<div className='relative'>
+					<div className='avatar'>
+						<div className='w-8 md:w-12 rounded-full'>
+							<img src={conversation.profilePic} alt='user avatar' />
+						</div>
 					</div>
+					{isOnline && (
+						<span className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-white rounded-full"></span>
+					)}
 				</div>
 
 				<div className='flex flex-col flex-1'>

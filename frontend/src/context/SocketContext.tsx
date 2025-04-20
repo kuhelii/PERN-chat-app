@@ -9,7 +9,7 @@ import {
 
 import { useAuthContext } from "./AuthContext";
 
-import { io, Socket } from "socket.io-client";
+import io,{ Socket } from "socket.io-client";
 
 interface ISocketContext {
     socket:Socket|null;
@@ -43,7 +43,8 @@ const SocketContextProvider = ({ children }: { children: ReactNode }) => {
             socketRef.current=socket;
 
             socket.on("getOnlineUsers", (users:string[]) => {
-               setOnlineUsers(users);
+                console.log("Online users received:", users); // Debugging log
+                setOnlineUsers(users);
             });
 
             

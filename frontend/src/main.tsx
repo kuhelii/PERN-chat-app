@@ -1,4 +1,6 @@
-import { StrictMode } from 'react'
+// import { StrictMode } from 'react'
+// import react from 'react';
+// import ReactDOM from 'react-dom/client';
 import { createRoot } from 'react-dom/client'
 import './index.css'
 import App from './App'
@@ -8,7 +10,7 @@ import SocketContextProvider from './context/SocketContext'
 
 
 createRoot(document.getElementById('root')!).render(
-  <StrictMode>
+  // <StrictMode>
     <BrowserRouter>
       <AuthContextProvider>
         <SocketContextProvider>
@@ -16,6 +18,6 @@ createRoot(document.getElementById('root')!).render(
         </SocketContextProvider>        
       </AuthContextProvider>
     </BrowserRouter>
-  </StrictMode>,
+  // </StrictMode>,
 )
 
