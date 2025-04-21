@@ -131,7 +131,7 @@ export const getUserForSidebar = async (req: Request, res: Response) => {
 
         // Get latest messages for each user
         const usersWithMessages = await Promise.all(
-            users.map(async (user) => {
+            users.map(async (user: { id: string; fullname: string; profilePic: string }) => {
                 const conversation = await prisma.conversation.findFirst({
                     where: {
                         participantIds: {
