@@ -17,6 +17,9 @@ const PORT = process.env.PORT || 5001;
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+// Get the root project directory (going up from backend/dist/src)
+const rootDir = path.join(__dirname, '..', '..', '..');
+
 // Apply middleware
 app.use(express.json());
 app.use(cookieparser());
@@ -39,19 +42,21 @@ app.use("/api/messages", messageRoutes);
 
 // Serve static files in production
 if (process.env.NODE_ENV === "production") {
-    const frontendDist = path.join(__dirname, "..", "..", "frontend", "dist");
+    // Define the correct path to frontend dist
+    const frontendDist = path.join(rootDir, "frontend", "dist");
+    console.log('Serving static files from:', frontendDist);
     
     // Serve static files
     app.use(express.static(frontendDist));
     
-    // Simple route to serve the index.html
-    app.get("/", (req, res) => {
-        res.sendFile(path.join(frontendDist, "index.html"));
-    });
-
-    // Serve index.html for all other routes (client-side routing)
-    app.get(/.*/, (req, res) => {
-        res.sendFile(path.join(frontendDist, "index.html"));
+    // Handle all routes
+    app.get("*", (req, res) => {
+        // Log the requested path and the file we're trying to send
+        const indexHtml = path.join(frontendDist, "index.html");
+        console.log('Request path:', req.path);
+        console.log('Serving index.html from:', indexHtml);
+        
+        res.sendFile(indexHtml);
     });
 }
 
