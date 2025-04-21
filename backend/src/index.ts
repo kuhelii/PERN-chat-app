@@ -11,38 +11,46 @@ import { app, server } from "./socket/socket.js";
 dotenv.config();
 
 const PORT = process.env.PORT || 5001;
-const __dirname = path.resolve(); // Get the current directory name
+const __dirname = path.resolve();
 
 // Apply middleware to the app imported from socket.js
-app.use(cookieparser());//for parsing cookies
-app.use(express.json());// for parsing application/json
+app.use(cookieparser());
+app.use(express.json());
 
+// Configure CORS based on environment
+const corsOrigin = process.env.NODE_ENV === "production" 
+    ? process.env.CLIENT_URL || "https://your-production-url.com"
+    : "http://localhost:5173";
 
 app.use(cors({
-    origin: 'http://localhost:5173',
-    credentials: true, // This allows cookies to be sent with cross-origin requests
+    origin: corsOrigin,
+    credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
+// API routes
+app.use("/api/auth", authRoutes);
+app.use("/api/messages", messageRoutes);
 
-app.use("/api/auth", authRoutes)
-app.use("/api/messages", messageRoutes)
-
-//frontend => 5173
-// have to do this backend,frontend => 5001
-
-if (process.env.NODE_ENV !== "development") {
-	app.use(express.static(path.join(__dirname, "/frontend/dist")));
-	app.get("*", (req, res) => {
-		res.sendFile(path.join(__dirname, "frontend", "dist", "index.html"));
-	});
+// Serve static files in production
+if (process.env.NODE_ENV === "production") {
+    // Serve static files
+    app.use(express.static(path.join(__dirname, "frontend", "dist")));
+    
+    // Handle client-side routing
+    app.get("/", (req, res) => {
+        res.sendFile(path.join(__dirname, "frontend", "dist", "index.html"));
+    });
+    
+    // Catch-all route for client-side routing
+    app.get("/*", (req, res) => {
+        res.sendFile(path.join(__dirname, "frontend", "dist", "index.html"));
+    });
 }
 
 server.listen(PORT, () => {
-    console.log("Server is running on port " + PORT);
+    console.log(`Server is running on port ${PORT} in ${process.env.NODE_ENV || 'development'} mode`);
 });
-
-//do later: configure this server for the deployment
 
 

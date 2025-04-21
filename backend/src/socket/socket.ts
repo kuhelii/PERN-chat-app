@@ -2,20 +2,28 @@ import {Server} from "socket.io";
 import http from "http";
 import express from "express";
 
-const app=express();
-const server=http.createServer(app);
-const io=new Server(server, {
-    cors:{
-        origin:["http://localhost:5173"],
-        methods:["GET", "POST"],
+const app = express();
+const server = http.createServer(app);
+
+// Configure Socket.IO based on environment
+const allowedOrigins = process.env.NODE_ENV === "production"
+    ? [process.env.CLIENT_URL || "https://your-production-url.com"]
+    : ["http://localhost:5173"];
+
+const io = new Server(server, {
+    cors: {
+        origin: allowedOrigins,
+        methods: ["GET", "POST"],
+        credentials: true
     },
+    pingTimeout: 60000
 });
 
-export const getReciverSocketId=(reciverId:string)=>{
+export const getReciverSocketId = (reciverId: string) => {
     return userSocketMap[reciverId];
 }
 
-const userSocketMap:{[key:string]:string}={};
+const userSocketMap: {[key: string]: string} = {};
 
 io.on("connection", (socket) => {
     console.log("a user connected ", socket.id);
@@ -39,5 +47,5 @@ io.on("connection", (socket) => {
     });
 });
 
-export {app,io,server};
+export {app, io, server};
 
