@@ -51,4 +51,5 @@ This project is built with:
 - PostgreSQL
 - Express.js
 - Node.js
+- Socket.IO
 - Tailwind CSS
